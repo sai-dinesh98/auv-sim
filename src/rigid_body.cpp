@@ -20,7 +20,11 @@ namespace auv {
         const Vec3 weight{0.0, 0.0, -mass_ * kGravity};
         const Vec3 buoyancy{0.0, 0.0, kRhoSeawater * volume_ * kGravity};
         const Vec3 drag = -0.5 * kRhoSeawater * cdA_ * s.vel.norm() * s.vel;
-        return {s.vel, (weight + buoyancy + drag) / mass_};
+        const Quaternion omegaQ{0.0, s.omega.x, s.omega.y, s.omega.z};
+        const Quaternion attDot = 0.5 * (s.att * omegaQ); // Attitude kinematics: q_dot = 0.5 * q ⊗ (0, ω)
+        const Vec3 omegaDot{};
+
+        return {s.vel, (weight + buoyancy + drag) / mass_, attDot, omegaDot};
     }
 
     double RigidBody::terminalSpeed() const {
